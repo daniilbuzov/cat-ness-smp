@@ -1,1 +1,408 @@
-тест сайт сервера
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAT-NESS SMP — Выживание с душой</title>
+<style>
+  :root {
+    --orange: #FF8C00;
+    --orange-light: #FFB84D;
+    --orange-dark: #CC6F00;
+    --bg: #0d0d0d;
+    --bg-card: #1a1a1a;
+    --text: #f0f0f0;
+    --text-dim: #a0a0a0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── ХЕДЕР ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(13, 13, 13, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--orange);
+    z-index: 100;
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header .brand img {
+    height: 42px;
+    width: 42px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px var(--orange));
+  }
+  header .brand span {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--orange);
+    letter-spacing: 1px;
+  }
+  header nav a {
+    color: var(--text);
+    text-decoration: none;
+    margin-left: 24px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: color 0.2s;
+  }
+  header nav a:hover { color: var(--orange); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 20px 60px;
+    position: relative;
+    background:
+      linear-gradient(rgba(13,13,13,0.75), rgba(13,13,13,0.92)),
+      url('assets/hero.png') center/cover no-repeat;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(transparent, var(--bg));
+    pointer-events: none;
+  }
+  .hero .content {
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(42px, 8vw, 96px);
+    color: var(--orange);
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-shadow: 0 0 30px rgba(255,140,0,0.6);
+    margin-bottom: 16px;
+  }
+  .hero p.tagline {
+    font-size: clamp(16px, 2.2vw, 22px);
+    color: var(--text-dim);
+    margin-bottom: 40px;
+  }
+  .ip-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid var(--orange);
+    border-radius: 12px;
+    padding: 16px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 30px rgba(255,140,0,0.3);
+  }
+  .ip-box span {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--orange);
+    font-family: 'Consolas', monospace;
+  }
+  .ip-box button {
+    background: var(--orange);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-size: 14px;
+  }
+  .ip-box button:hover { background: var(--orange-light); }
+  .ip-box button:active { transform: scale(0.95); }
+  .ip-box button.copied { background: #4CAF50; color: #fff; }
+  .hero .play-btn {
+    display: inline-block;
+    background: transparent;
+    border: 2px solid var(--orange);
+    color: var(--orange);
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.25s;
+  }
+  .hero .play-btn:hover {
+    background: var(--orange);
+    color: #000;
+    box-shadow: 0 0 30px rgba(255,140,0,0.6);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 100px 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  section h2 {
+    font-size: clamp(30px, 4vw, 48px);
+    color: var(--orange);
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+  section .subtitle {
+    text-align: center;
+    color: var(--text-dim);
+    margin-bottom: 60px;
+    font-size: 17px;
+  }
+
+  /* ── ГАЛЕРЕЯ ── */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .gallery .item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s, transform 0.3s;
+    aspect-ratio: 16/9;
+  }
+  .gallery .item:hover {
+    border-color: var(--orange);
+    transform: translateY(-4px);
+  }
+  .gallery .item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+  .gallery .item:hover img { transform: scale(1.08); }
+  .gallery .item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 60%, rgba(0,0,0,0.85));
+    pointer-events: none;
+  }
+
+  /* ── ФИЧИ ── */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 32px 24px;
+    transition: border-color 0.3s, transform 0.3s;
+    text-align: center;
+  }
+  .feature-card:hover {
+    border-color: var(--orange);
+    transform: translateY(-4px);
+  }
+  .feature-card .icon {
+    font-size: 42px;
+    margin-bottom: 16px;
+  }
+  .feature-card h3 {
+    color: var(--orange);
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  .feature-card p {
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  /* ── CTA ── */
+  .cta {
+    text-align: center;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, rgba(255,140,0,0.1), rgba(255,140,0,0.02));
+    border-top: 2px solid var(--orange);
+    border-bottom: 2px solid var(--orange);
+  }
+  .cta h2 { margin-bottom: 20px; }
+  .cta p {
+    color: var(--text-dim);
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+
+  /* ── ФУТЕР ── */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 14px;
+    border-top: 1px solid #222;
+  }
+  footer a {
+    color: var(--orange);
+    text-decoration: none;
+  }
+  footer a:hover { text-decoration: underline; }
+
+  /* ── МОБИЛЬНАЯ АДАПТАЦИЯ ── */
+  @media (max-width: 700px) {
+    header { padding: 10px 16px; flex-wrap: wrap; }
+    header nav { margin-top: 8px; }
+    header nav a { margin-left: 12px; font-size: 13px; }
+    section { padding: 60px 20px; }
+    .ip-box { flex-direction: column; padding: 12px 20px; }
+    .ip-box span { font-size: 15px; word-break: break-all; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ХЕДЕР -->
+<header>
+  <div class="brand">
+    <img src="assets/logo.png" alt="CAT-NESS SMP">
+    <span>CAT-NESS SMP</span>
+  </div>
+  <nav>
+    <a href="#gallery">Галерея</a>
+    <a href="#features">Особенности</a>
+    <a href="#join">Начать играть</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="content">
+    <h1>CAT-NESS SMP</h1>
+    <p class="tagline">Выживание с душой. Дружное комьюнити. Твой второй дом.</p>
+    <div class="ip-box">
+      <span id="server-ip">cat-ness.aternos.me:31789</span>
+      <button onclick="copyIP()" id="copyBtn">КОПИРОВАТЬ IP</button>
+    </div>
+    <br>
+    <a href="#join" class="play-btn">НАЧАТЬ ИГРАТЬ →</a>
+  </div>
+</section>
+
+<!-- ГАЛЕРЕЯ -->
+<section id="gallery">
+  <h2>Наш мир</h2>
+  <p class="subtitle">Живые скриншоты с сервера — от спавна до арен</p>
+  <div class="gallery">
+    <div class="item"><img src="assets/game1.png" alt="Скриншот 1"></div>
+    <div class="item"><img src="assets/game2.png" alt="Скриншот 2"></div>
+    <div class="item"><img src="assets/game3.png" alt="Скриншот 3"></div>
+    <div class="item"><img src="assets/hero.png" alt="Скриншот 4"></div>
+    <!-- Если добавишь assets/game4.png — раскомментируй строку ниже -->
+    <!-- <div class="item"><img src="assets/game4.png" alt="Скриншот 4"></div> -->
+  </div>
+</section>
+
+<!-- ФИЧИ -->
+<section id="features">
+  <h2>Что нас отличает</h2>
+  <p class="subtitle">Мы сделали сервер, на котором приятно играть</p>
+  <div class="features">
+    <div class="feature-card">
+      <div class="icon">⚔️</div>
+      <h3>Выживание</h3>
+      <p>Классический SMP с приватами, рынком и заданиями.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💰</div>
+      <h3>Экономика</h3>
+      <p>Свой рынок, магазин ресурсов, казино и кейсы.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">👑</div>
+      <h3>Донат-ранги</h3>
+      <p>VIP, PREMIUM, GOD и СОЗДАТЕЛЬ — с бонусами и китами.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎯</div>
+      <h3>Задания</h3>
+      <p>Шахтёр, Охотник, Дровосек, Зомби-убийца — зарабатывай монеты.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🏠</div>
+      <h3>Дома и варпы</h3>
+      <p>До 3 домов на игрока + быстрые перемещения по варпам.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🛡️</div>
+      <h3>Античит и защита</h3>
+      <p>Следим за порядком, баним читеров и гриферов.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta" id="join">
+  <h2>Готов начать?</h2>
+  <p>Скопируй IP и заходи в игру. Ждём тебя!</p>
+  <div class="ip-box">
+    <span>cat-ness.aternos.me:31789</span>
+    <button onclick="copyIP()">КОПИРОВАТЬ</button>
+  </div>
+</div>
+
+<!-- ФУТЕР -->
+<footer>
+  <p>© 2025 CAT-NESS SMP. Сделано с <span style="color:#FF8C00">♥</span> для игроков.</p>
+  <p style="margin-top:8px">
+    Связь: <a href="https://max.ru/join/1vCvdpRzXII_i94Jd98w1QKaAFBgoYaFc2TsmjFYarc" target="_blank">MAX-канал</a>
+  </p>
+</footer>
+
+<script>
+  function copyIP() {
+    const ip = 'cat-ness.aternos.me:31789';
+    const btn = document.getElementById('copyBtn');
+    navigator.clipboard.writeText(ip).then(() => {
+      if (btn) {
+        btn.textContent = 'СКОПИРОВАНО ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'КОПИРОВАТЬ IP';
+          btn.classList.remove('copied');
+        }, 2000);
+      }
+    }).catch(() => {
+      // fallback для старых браузеров
+      const ta = document.createElement('textarea');
+      ta.value = ip;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('IP скопирован: ' + ip);
+    });
+  }
+</script>
+
+</body>
+</html>
