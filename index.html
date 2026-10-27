@@ -3,404 +3,615 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CAT-NESS SMP — Выживание с душой</title>
+<title>CAT-NESS SMP — маленький сервер для своих</title>
+
+<!-- Иконка сайта (фавикон) -->
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png">
+
+<!-- Превью для Telegram/Discord/VK -->
+<meta property="og:title" content="CAT-NESS SMP">
+<meta property="og:description" content="Маленький выживаческий сервер для своих. Заходи, у нас уютно.">
+<meta property="og:image" content="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png">
+<meta property="og:type" content="website">
+
+<meta name="theme-color" content="#FF8C00">
+
 <style>
   :root {
     --orange: #FF8C00;
-    --orange-light: #FFB84D;
-    --orange-dark: #CC6F00;
-    --bg: #0d0d0d;
-    --bg-card: #1a1a1a;
-    --text: #f0f0f0;
-    --text-dim: #a0a0a0;
+    --orange-soft: #FFB84D;
+    --bg: #101010;
+    --bg-soft: #171717;
+    --line: #262626;
+    --text: #eaeaea;
+    --text-mute: #8a8a8a;
   }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   html { scroll-behavior: smooth; }
+
   body {
     font-family: 'Segoe UI', Tahoma, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.7;
+    font-size: 17px;
     overflow-x: hidden;
   }
 
-  /* ── ХЕДЕР ── */
-  header {
+  /* лёгкая «бумажная» текстура на фоне — чтобы не было идеально-стерильно */
+  body::before {
+    content: '';
     position: fixed;
-    top: 0; left: 0; right: 0;
-    background: rgba(13, 13, 13, 0.85);
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: radial-gradient(rgba(255,140,0,0.04) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: .35;
+  }
+
+  a { color: var(--orange); }
+
+  /* ─────── HEADER ─────── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 14px 28px;
+    background: rgba(16,16,16,.85);
     backdrop-filter: blur(10px);
-    border-bottom: 2px solid var(--orange);
-    z-index: 100;
-    padding: 12px 40px;
+    border-bottom: 1px solid var(--line);
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
+
   header .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
   }
+
   header .brand img {
-    height: 42px;
-    width: 42px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 8px var(--orange));
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
   }
-  header .brand span {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--orange);
-    letter-spacing: 1px;
-  }
+
+  header .brand span { color: var(--orange); font-size: 18px; }
+
   header nav a {
-    color: var(--text);
+    margin-left: 22px;
+    color: var(--text-mute);
     text-decoration: none;
-    margin-left: 24px;
-    font-weight: 600;
     font-size: 15px;
-    transition: color 0.2s;
+    transition: color .15s;
   }
+
   header nav a:hover { color: var(--orange); }
 
-  /* ── HERO ── */
+  @media (max-width: 720px) {
+    header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+    header nav a { margin-left: 14px; font-size: 14px; }
+    header nav a:first-child { margin-left: 0; }
+  }
+
+  /* ─────── HERO ─────── */
   .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 120px 20px 60px;
     position: relative;
+    padding: 110px 24px 90px;
+    text-align: center;
     background:
-      linear-gradient(rgba(13,13,13,0.75), rgba(13,13,13,0.92)),
-      url('assets/hero.png') center/cover no-repeat;
+      linear-gradient(rgba(16,16,16,.82), rgba(16,16,16,.95)),
+      url('https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/67.png') center/cover no-repeat;
+    border-bottom: 1px solid var(--line);
   }
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 120px;
-    background: linear-gradient(transparent, var(--bg));
-    pointer-events: none;
+
+  .hero .logo {
+    width: 96px;
+    height: 96px;
+    border-radius: 16px;
+    border: 2px solid var(--orange);
+    box-shadow: 0 0 40px rgba(255,140,0,.35);
+    margin-bottom: 22px;
   }
-  .hero .content {
-    max-width: 900px;
+
+  .hero h1 {
+    font-size: clamp(38px, 6.5vw, 68px);
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--orange);
+    line-height: 1.05;
+  }
+
+  .hero .lead {
+    max-width: 620px;
+    margin: 18px auto 32px;
+    color: #c9c9c9;
+    font-size: 17px;
+    font-style: italic;
+  }
+
+  .ip-block {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--orange);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0,0,0,.6);
+  }
+
+  .ip-block .ip-text {
+    padding: 12px 18px;
+    font-family: 'Consolas', monospace;
+    font-size: 16px;
+    letter-spacing: .5px;
+    color: var(--orange-soft);
+  }
+
+  .ip-block button {
+    background: var(--orange);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    padding: 0 20px;
+    cursor: pointer;
+    font-size: 14px;
+    letter-spacing: .3px;
+    transition: background .2s;
+  }
+
+  .ip-block button:hover { background: var(--orange-soft); }
+  .ip-block button.ok { background: #3fb950; color: #fff; }
+
+  .hero .version {
+    display: block;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--text-mute);
+    font-family: 'Consolas', monospace;
+  }
+
+  /* ─────── ОБЩИЙ КОНТЕЙНЕР ─────── */
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
     position: relative;
     z-index: 2;
   }
-  .hero h1 {
-    font-size: clamp(42px, 8vw, 96px);
+
+  section {
+    padding: 70px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  section:last-of-type { border-bottom: none; }
+
+  .kicker {
+    font-size: 12px;
+    letter-spacing: 4px;
     color: var(--orange);
-    font-weight: 900;
-    letter-spacing: 3px;
-    text-shadow: 0 0 30px rgba(255,140,0,0.6);
-    margin-bottom: 16px;
+    text-transform: uppercase;
+    font-family: 'Consolas', monospace;
+    margin-bottom: 10px;
   }
-  .hero p.tagline {
-    font-size: clamp(16px, 2.2vw, 22px);
-    color: var(--text-dim);
-    margin-bottom: 40px;
+
+  h2 {
+    font-size: clamp(26px, 4vw, 34px);
+    margin-bottom: 22px;
+    font-weight: 800;
+    line-height: 1.2;
   }
-  .ip-box {
-    display: inline-flex;
-    align-items: center;
+
+  h2 em {
+    color: var(--orange);
+    font-style: normal;
+  }
+
+  p { margin-bottom: 14px; color: #cfcfcf; }
+
+  p.note {
+    color: var(--text-mute);
+    font-style: italic;
+    font-size: 15px;
+    border-left: 3px solid var(--orange);
+    padding-left: 14px;
+    margin: 22px 0;
+  }
+
+  /* ─────── СПИСОК «ЧТО У НАС ЕСТЬ» ─────── */
+  .features {
+    list-style: none;
+    padding: 0;
+  }
+
+  .features li {
+    padding: 18px 0;
+    border-bottom: 1px dashed #232323;
+    display: grid;
+    grid-template-columns: 130px 1fr;
     gap: 16px;
-    background: rgba(0,0,0,0.7);
-    border: 2px solid var(--orange);
-    border-radius: 12px;
-    padding: 16px 28px;
-    margin-bottom: 24px;
-    box-shadow: 0 0 30px rgba(255,140,0,0.3);
+    align-items: baseline;
   }
-  .ip-box span {
-    font-size: 20px;
-    font-weight: 700;
+
+  .features li:last-child { border-bottom: none; }
+
+  .features .name {
     color: var(--orange);
     font-family: 'Consolas', monospace;
-  }
-  .ip-box button {
-    background: var(--orange);
-    color: #000;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    font-size: 14px;
-  }
-  .ip-box button:hover { background: var(--orange-light); }
-  .ip-box button:active { transform: scale(0.95); }
-  .ip-box button.copied { background: #4CAF50; color: #fff; }
-  .hero .play-btn {
-    display: inline-block;
-    background: transparent;
-    border: 2px solid var(--orange);
-    color: var(--orange);
-    padding: 14px 36px;
-    border-radius: 50px;
-    font-weight: 700;
-    text-decoration: none;
-    font-size: 16px;
-    transition: all 0.25s;
-  }
-  .hero .play-btn:hover {
-    background: var(--orange);
-    color: #000;
-    box-shadow: 0 0 30px rgba(255,140,0,0.6);
+    font-size: 15px;
+    letter-spacing: .5px;
   }
 
-  /* ── SECTIONS ── */
-  section {
-    padding: 100px 40px;
-    max-width: 1300px;
-    margin: 0 auto;
-  }
-  section h2 {
-    font-size: clamp(30px, 4vw, 48px);
-    color: var(--orange);
-    text-align: center;
-    margin-bottom: 16px;
-    font-weight: 900;
-    letter-spacing: 2px;
-  }
-  section .subtitle {
-    text-align: center;
-    color: var(--text-dim);
-    margin-bottom: 60px;
-    font-size: 17px;
+  .features .desc { color: #c9c9c9; font-size: 16px; }
+
+  @media (max-width: 560px) {
+    .features li { grid-template-columns: 1fr; gap: 4px; }
   }
 
-  /* ── ГАЛЕРЕЯ ── */
+  /* ─────── ГАЛЕРЕЯ ─────── */
   .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
-  .gallery .item {
+
+  .gallery figure {
     position: relative;
     overflow: hidden;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    transition: border-color 0.3s, transform 0.3s;
-    aspect-ratio: 16/9;
+    border-radius: 8px;
+    border: 1px solid #222;
+    margin: 0;
+    aspect-ratio: 16/10;
+    cursor: pointer;
   }
-  .gallery .item:hover {
-    border-color: var(--orange);
-    transform: translateY(-4px);
-  }
-  .gallery .item img {
+
+  .gallery img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.5s;
-  }
-  .gallery .item:hover img { transform: scale(1.08); }
-  .gallery .item::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(transparent 60%, rgba(0,0,0,0.85));
-    pointer-events: none;
+    transition: transform .5s;
   }
 
-  /* ── ФИЧИ ── */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 24px;
+  .gallery figure:hover img { transform: scale(1.05); }
+
+  .gallery figcaption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 34px 16px 12px;
+    background: linear-gradient(transparent, rgba(0,0,0,.92));
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--orange-soft);
+    letter-spacing: .3px;
+    z-index: 2;
   }
-  .feature-card {
-    background: var(--bg-card);
-    border: 1px solid #2a2a2a;
-    border-radius: 14px;
-    padding: 32px 24px;
-    transition: border-color 0.3s, transform 0.3s;
-    text-align: center;
+
+  .gallery figcaption small {
+    display: block;
+    color: #bdbdbd;
+    font-weight: 400;
+    font-size: 12px;
+    margin-top: 2px;
   }
-  .feature-card:hover {
-    border-color: var(--orange);
-    transform: translateY(-4px);
+
+  @media (max-width: 560px) {
+    .gallery { grid-template-columns: 1fr; }
   }
-  .feature-card .icon {
-    font-size: 42px;
-    margin-bottom: 16px;
+
+  /* ─────── ПРАВИЛА ─────── */
+  ol.rules {
+    padding-left: 22px;
+    color: #cfcfcf;
   }
-  .feature-card h3 {
+
+  ol.rules li { margin-bottom: 12px; }
+
+  ol.rules li b { color: var(--orange); }
+
+  /* ─────── FAQ ─────── */
+  details.faq {
+    padding: 16px 0;
+    border-bottom: 1px dashed #232323;
+    cursor: pointer;
+  }
+
+  details.faq:last-child { border-bottom: none; }
+
+  details.faq summary {
+    list-style: none;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  details.faq summary::-webkit-details-marker { display: none; }
+
+  details.faq summary::after {
+    content: '+';
     color: var(--orange);
     font-size: 20px;
-    margin-bottom: 10px;
+    font-weight: 900;
+    transition: transform .2s;
   }
-  .feature-card p {
-    color: var(--text-dim);
+
+  details.faq[open] summary::after {
+    content: '−';
+  }
+
+  details.faq p {
+    margin-top: 12px;
+    color: #c0c0c0;
     font-size: 15px;
   }
 
-  /* ── CTA ── */
-  .cta {
+  /* ─────── ФИНАЛЬНЫЙ БЛОК ─────── */
+  .join-final {
     text-align: center;
-    padding: 80px 40px;
-    background: linear-gradient(135deg, rgba(255,140,0,0.1), rgba(255,140,0,0.02));
-    border-top: 2px solid var(--orange);
-    border-bottom: 2px solid var(--orange);
-  }
-  .cta h2 { margin-bottom: 20px; }
-  .cta p {
-    color: var(--text-dim);
-    font-size: 18px;
-    margin-bottom: 30px;
+    padding: 80px 24px 90px;
+    background: linear-gradient(180deg, #101010, #171208);
+    border-top: 1px solid var(--line);
   }
 
-  /* ── ФУТЕР ── */
-  footer {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-dim);
+  .join-final h2 { margin-bottom: 14px; }
+
+  .join-final p { color: #b9b9b9; margin-bottom: 26px; }
+
+  .social-row {
+    margin-top: 26px;
     font-size: 14px;
-    border-top: 1px solid #222;
+    color: var(--text-mute);
   }
-  footer a {
-    color: var(--orange);
-    text-decoration: none;
-  }
-  footer a:hover { text-decoration: underline; }
 
-  /* ── МОБИЛЬНАЯ АДАПТАЦИЯ ── */
-  @media (max-width: 700px) {
-    header { padding: 10px 16px; flex-wrap: wrap; }
-    header nav { margin-top: 8px; }
-    header nav a { margin-left: 12px; font-size: 13px; }
-    section { padding: 60px 20px; }
-    .ip-box { flex-direction: column; padding: 12px 20px; }
-    .ip-box span { font-size: 15px; word-break: break-all; }
+  .social-row a {
+    color: var(--orange-soft);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--orange-soft);
   }
+
+  /* ─────── FOOTER ─────── */
+  footer {
+    padding: 28px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: #6f6f6f;
+    font-family: 'Consolas', monospace;
+  }
+
+  footer span { color: var(--orange); }
 </style>
 </head>
 <body>
 
-<!-- ХЕДЕР -->
+<!-- ─────── HEADER ─────── -->
 <header>
   <div class="brand">
-    <img src="assets/logo.png" alt="CAT-NESS SMP">
+    <img src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png" alt="CAT-NESS SMP">
     <span>CAT-NESS SMP</span>
   </div>
   <nav>
-    <a href="#gallery">Галерея</a>
-    <a href="#features">Особенности</a>
-    <a href="#join">Начать играть</a>
+    <a href="#about">О сервере</a>
+    <a href="#inside">Что внутри</a>
+    <a href="#gallery">Фото</a>
+    <a href="#rules">Правила</a>
+    <a href="#faq">Вопросы</a>
   </nav>
 </header>
 
-<!-- HERO -->
+<!-- ─────── HERO ─────── -->
 <section class="hero" id="home">
-  <div class="content">
-    <h1>CAT-NESS SMP</h1>
-    <p class="tagline">Выживание с душой. Дружное комьюнити. Твой второй дом.</p>
-    <div class="ip-box">
-      <span id="server-ip">cat-ness.aternos.me:31789</span>
-      <button onclick="copyIP()" id="copyBtn">КОПИРОВАТЬ IP</button>
-    </div>
-    <br>
-    <a href="#join" class="play-btn">НАЧАТЬ ИГРАТЬ →</a>
+  <img class="logo"
+       src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png"
+       alt="Логотип CAT-NESS SMP">
+  <h1>CAT-NESS SMP</h1>
+  <p class="lead">Маленький выживаческий сервер, который мы держим для своих. Без донат-помоек и казино на каждом шагу — только мир, друзья и тихие вечера в голосовом.</p>
+
+  <div class="ip-block">
+    <span class="ip-text" id="ip">cat-ness.aternos.me:31789</span>
+    <button onclick="copyIP()" id="copyBtn">Скопировать</button>
+  </div>
+
+  <span class="version">Java Edition · 1.21.x · Aternos</span>
+</section>
+
+<!-- ─────── О СЕРВЕРЕ ─────── -->
+<section id="about">
+  <div class="wrap">
+    <div class="kicker">О сервере</div>
+    <h2>Началось всё с <em>одного вечера</em> и пары друзей</h2>
+
+    <p>CAT-NESS — это не проект на продажу и не «очередной SMP с казино». Это сервер, который мы запустили для себя и друзей: чтобы было куда зайти после школы или работы, построить домик, сходить в шахту и не наткнуться на очередной магазин «алмазы за реальные деньги».</p>
+
+    <p>Хост у нас простой — Aternos, поэтому сервер не держит 200 человек одновременно. Зато здесь реально можно кого-то встретить, познакомиться и остаться на пару месяцев. У нас нет «сезонов по 2 недели» и вайпов каждый месяц — мир живёт, пока в него заходят.</p>
+
+    <p class="note">Если ты только зашёл и не знаешь, куда идти — напиши в чат. Кто-нибудь из старичков обычно в онлайне и с радостью покажет спавн, рынок и наши главные постройки.</p>
+
+    <p>Админ сервера — <b style="color:var(--orange)">Daniilbuzov</b>. Он же строит, он же чинит, он же банит читеров. Если что-то сломалось или кого-то обижают — пиши ему в личку прямо на сервере.</p>
   </div>
 </section>
 
-<!-- ГАЛЕРЕЯ -->
+<!-- ─────── ЧТО ВНУТРИ ─────── -->
+<section id="inside">
+  <div class="wrap">
+    <div class="kicker">Что внутри</div>
+    <h2>Чем у нас можно заняться</h2>
+
+    <ul class="features">
+      <li>
+        <span class="name">выживание</span>
+        <span class="desc">Классическое выживание без лишних модов. Приваты есть, но только чтобы не грифили — строй, копай, развивайся.</span>
+      </li>
+      <li>
+        <span class="name">экономика</span>
+        <span class="desc">Своя валюта — монеты. Их можно получить за задания, продажу ресурсов на рынке или выиграть в казино. Тратить — на киты, кейсы, донат-ранги.</span>
+      </li>
+      <li>
+        <span class="name">рынок игроков</span>
+        <span class="desc">Специальное меню (через книжку в инвентаре), где ты сам выставляешь вещи на продажу и назначаешь цену. Никаких «магазинов от админа».</span>
+      </li>
+      <li>
+        <span class="name">задания</span>
+        <span class="desc">Шахтёр, Охотник, Дровосек, Зомби-убийца — четыре ветки заданий, за которые платят монетами. Хороший старт для новичка.</span>
+      </li>
+      <li>
+        <span class="name">дома и варпы</span>
+        <span class="desc">До трёх домов на игрока (через /sethome) и общие варпы — шахта, кофейня, база. Всё в одном меню, ничего не надо запоминать.</span>
+      </li>
+      <li>
+        <span class="name">донат-ранги</span>
+        <span class="desc">VIP, PREMIUM, GOD и СОЗДАТЕЛЬ. Покупаются только за игровые монеты — реальных денег мы не берём.</span>
+      </li>
+      <li>
+        <span class="name">ивенты</span>
+        <span class="desc">Иногда собираемся толпой: мини-игры, гонки, стройки. Анонсы — в нашем канале (ссылка внизу).</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────── ГАЛЕРЕЯ ─────── -->
 <section id="gallery">
-  <h2>Наш мир</h2>
-  <p class="subtitle">Живые скриншоты с сервера — от спавна до арен</p>
-  <div class="gallery">
-    <div class="item"><img src="assets/game1.png" alt="Скриншот 1"></div>
-    <div class="item"><img src="assets/game2.png" alt="Скриншот 2"></div>
-    <div class="item"><img src="assets/game3.png" alt="Скриншот 3"></div>
-    <div class="item"><img src="assets/hero.png" alt="Скриншот 4"></div>
-    <!-- Если добавишь assets/game4.png — раскомментируй строку ниже -->
-    <!-- <div class="item"><img src="assets/game4.png" alt="Скриншот 4"></div> -->
+  <div class="wrap">
+    <div class="kicker">Скриншоты</div>
+    <h2>Как выглядит наш мир</h2>
+
+    <div class="gallery">
+      <figure>
+        <img src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/90%D0%B0.png" alt="Спавн">
+        <figcaption>Наш спавн <small>первое, что ты увидишь</small></figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/12.png" alt="Кофейня">
+        <figcaption>Наше кафе <small>здесь обычно все собираются</small></figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/67.png" alt="База">
+        <figcaption>Наша база <small>строили всем сервером</small></figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/957.png" alt="Маши сервера">
+        <figcaption>Маши сервера <small>да, у нас есть своя техника</small></figcaption>
+      </figure>
+    </div>
+
+    <p class="note">Скриншотов пока немного — мы добавим ещё, когда построим что-то новое. Если хочешь показать свою постройку на сайте — скинь скрин админу.</p>
   </div>
 </section>
 
-<!-- ФИЧИ -->
-<section id="features">
-  <h2>Что нас отличает</h2>
-  <p class="subtitle">Мы сделали сервер, на котором приятно играть</p>
-  <div class="features">
-    <div class="feature-card">
-      <div class="icon">⚔️</div>
-      <h3>Выживание</h3>
-      <p>Классический SMP с приватами, рынком и заданиями.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon">💰</div>
-      <h3>Экономика</h3>
-      <p>Свой рынок, магазин ресурсов, казино и кейсы.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon">👑</div>
-      <h3>Донат-ранги</h3>
-      <p>VIP, PREMIUM, GOD и СОЗДАТЕЛЬ — с бонусами и китами.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon">🎯</div>
-      <h3>Задания</h3>
-      <p>Шахтёр, Охотник, Дровосек, Зомби-убийца — зарабатывай монеты.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon">🏠</div>
-      <h3>Дома и варпы</h3>
-      <p>До 3 домов на игрока + быстрые перемещения по варпам.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon">🛡️</div>
-      <h3>Античит и защита</h3>
-      <p>Следим за порядком, баним читеров и гриферов.</p>
-    </div>
+<!-- ─────── ПРАВИЛА ─────── -->
+<section id="rules">
+  <div class="wrap">
+    <div class="kicker">Правила</div>
+    <h2>Коротко, чтобы не читать стену текста</h2>
+
+    <ol class="rules">
+      <li><b>Не гриф.</b> Не ломай чужие постройки, не поджигай, не заливай лавой. Даже если «просто шутка».</li>
+      <li><b>Не читерить.</b> X-Ray, флай, килл-аура, автоклик — бан без разговоров.</li>
+      <li><b>Не спамить и не оскорблять.</b> Мат в меру, оскорбления по национальности/полу — нет.</li>
+      <li><b>Не воровать.</b> Если взял у соседа что-то из сундука без разрешения — это воровство.</li>
+      <li><b>Договаривайся словами.</b> Хочешь PvP — спроси, хочет ли соперник. Без «я просто подошёл и убил».</li>
+    </ol>
+
+    <p class="note">За нарушения — предупреждение, потом бан. За крупные (читы, гриф базы) — сразу бан. Апелляции — в личку админу, он человек и выслушает.</p>
   </div>
 </section>
 
-<!-- CTA -->
-<div class="cta" id="join">
-  <h2>Готов начать?</h2>
-  <p>Скопируй IP и заходи в игру. Ждём тебя!</p>
-  <div class="ip-box">
-    <span>cat-ness.aternos.me:31789</span>
-    <button onclick="copyIP()">КОПИРОВАТЬ</button>
+<!-- ─────── FAQ ─────── -->
+<section id="faq">
+  <div class="wrap">
+    <div class="kicker">Частые вопросы</div>
+    <h2>Что обычно спрашивают новички</h2>
+
+    <details class="faq">
+      <summary>Как вообще зайти на сервер?</summary>
+      <p>Открой Minecraft Java Edition (1.21.x), нажми «Сетевая игра» → «Добавить сервер» и вставь адрес <b>cat-ness.aternos.me:31789</b>. Всё, подключайся. Пиратка тоже зайдёт, но лучше лицензия.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Что делать в первые 10 минут?</summary>
+      <p>Напиши в чат «привет, я новый» — кто-нибудь отзовётся. Потом открой книжку-меню (тебе её выдадут при входе) и посмотри задания — они дают первые монеты. Дальше выбирай: идти копать, строить или торговать на рынке.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Как заработать первые монеты?</summary>
+      <p>Три простых пути: продать ресурсы в серверном магазине (руда, уголь, железо), выполнить задание Шахтёра или продать что-то на рынке игроков (если у тебя есть что-то, чего нет у других).</p>
+    </details>
+
+    <details class="faq">
+      <summary>Сервер лагает?</summary>
+      <p>Хост — Aternos, поэтому иногда бывает. Если сильно лагает — напиши в чат, админ перезапустит. Если проблема у тебя одного — проверь интернет и зайди снова.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Можно ли стать админом?</summary>
+      <p>Админ один — Daniilbuzov. Он никого не берёт в админы. Но если хочешь помогать — стань активным игроком, помогай новичкам, и, может, тебе дадут роль «хелпера» в чате.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Куда писать, если что-то не работает?</summary>
+      <p>В наш <a href="https://max.ru/join/1vCvdpRzXII_i94Jd98w1QKaAFBgoYaFc2TsmjFYarc" target="_blank">канал в MAX</a> или в личку админу прямо на сервере. Обычно отвечаем в течение дня.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ─────── ФИНАЛ ─────── -->
+<div class="join-final" id="join">
+  <h2>Заходи, если стало интересно</h2>
+  <p>Скопируй IP и вбей в Minecraft. Дальше сам разберёшься — тут все свои.</p>
+
+  <div class="ip-block">
+    <span class="ip-text">cat-ness.aternos.me:31789</span>
+    <button onclick="copyIP()">Скопировать</button>
+  </div>
+
+  <div class="social-row">
+    Мы в <a href="https://max.ru/join/1vCvdpRzXII_i94Jd98w1QKaAFBgoYaFc2TsmjFYarc" target="_blank">MAX-канале</a> — там анонсы ивентов и просто болталка.
   </div>
 </div>
 
-<!-- ФУТЕР -->
+<!-- ─────── FOOTER ─────── -->
 <footer>
-  <p>© 2025 CAT-NESS SMP. Сделано с <span style="color:#FF8C00">♥</span> для игроков.</p>
-  <p style="margin-top:8px">
-    Связь: <a href="https://max.ru/join/1vCvdpRzXII_i94Jd98w1QKaAFBgoYaFc2TsmjFYarc" target="_blank">MAX-канал</a>
-  </p>
+  © CAT-NESS SMP · сделано вручную, не ИИ · <span>♥</span> для тех, кто заходит
 </footer>
 
 <script>
   function copyIP() {
     const ip = 'cat-ness.aternos.me:31789';
-    const btn = document.getElementById('copyBtn');
-    navigator.clipboard.writeText(ip).then(() => {
-      if (btn) {
-        btn.textContent = 'СКОПИРОВАНО ✓';
-        btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = 'КОПИРОВАТЬ IP';
-          btn.classList.remove('copied');
-        }, 2000);
-      }
-    }).catch(() => {
-      // fallback для старых браузеров
-      const ta = document.createElement('textarea');
-      ta.value = ip;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      alert('IP скопирован: ' + ip);
+    const btns = document.querySelectorAll('.ip-block button');
+    const doIt = () => btns.forEach(b => {
+      const old = b.textContent;
+      b.textContent = 'Скопировано ✓';
+      b.classList.add('ok');
+      setTimeout(() => { b.textContent = old; b.classList.remove('ok'); }, 1800);
     });
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(ip).then(doIt).catch(fallback);
+    } else {
+      fallback();
+    }
+
+    function fallback() {
+      const t = document.createElement('textarea');
+      t.value = ip;
+      t.style.position = 'fixed';
+      t.style.opacity = 0;
+      document.body.appendChild(t);
+      t.select();
+      try { document.execCommand('copy'); doIt(); }
+      catch (e) { alert('IP: ' + ip); }
+      document.body.removeChild(t);
+    }
   }
 </script>
 
