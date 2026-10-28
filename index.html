@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FF8C00">
 <title>CAT-NESS SMP — маленький сервер для своих</title>
 
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png">
@@ -11,7 +12,6 @@
 <meta property="og:title" content="CAT-NESS SMP">
 <meta property="og:description" content="Маленький выживач для своих. Заходи, у нас уютно.">
 <meta property="og:image" content="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png">
-<meta name="theme-color" content="#FF8C00">
 
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -23,6 +23,9 @@
     --slot-light: #c6c6c6;
     --text: #eaeaea;
     --text-mute: #9a9a9a;
+    --green: #4ade80;
+    --red: #ef4444;
+    --yellow: #fbbf24;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -40,7 +43,18 @@
     position: relative;
   }
 
-  /* ═════════ АНИМИРОВАННЫЙ ФОН ═════════ */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--orange), var(--orange-soft));
+    z-index: 100;
+    transition: width 0.1s ease-out;
+    box-shadow: 0 0 10px rgba(255,140,0,0.6);
+  }
+
   .bg-particles {
     position: fixed;
     inset: 0;
@@ -52,8 +66,6 @@
   .bg-particles span {
     position: absolute;
     display: block;
-    width: 14px;
-    height: 14px;
     background: var(--orange);
     opacity: 0;
     box-shadow:
@@ -83,14 +95,13 @@
 
   header, .hero, section, .join-final, footer { position: relative; z-index: 2; }
 
-  /* ═════════ HEADER ═════════ */
   header {
     position: sticky;
     top: 0;
     z-index: 50;
     background: rgba(15,15,15,.94);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-bottom: 2px solid #2a2a2a;
     box-shadow: 0 2px 0 var(--orange);
     padding: 12px 20px;
@@ -129,10 +140,8 @@
     display: inline-block;
   }
 
-  header nav a:hover,
-  header nav a:focus { color: var(--orange); }
+  header nav a:hover { color: var(--orange); }
 
-  /* ═════════ HERO ═════════ */
   .hero {
     padding: 50px 20px 60px;
     display: flex;
@@ -183,7 +192,7 @@
     font-size: 17px;
     font-weight: 500;
     line-height: 1.4;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
   .server-card .motd b { color: var(--orange); }
 
@@ -265,7 +274,6 @@
     text-shadow: 2px 2px 0 #1a4a1a;
   }
 
-  /* ═════════ ОБЩИЕ СЕКЦИИ ═════════ */
   .wrap {
     max-width: 780px;
     margin: 0 auto;
@@ -273,6 +281,17 @@
   }
 
   section { padding: 55px 0; }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
   .kicker {
     font-size: 15px;
@@ -310,9 +329,6 @@
   p { margin-bottom: 12px; color: #c9c9c9; }
   p b { color: var(--orange); }
 
-  a { color: var(--orange-soft); }
-
-  /* ═════════ СТАТИСТИКА ═════════ */
   .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -331,7 +347,7 @@
 
   .stat:hover {
     transform: translateY(-4px);
-    box-shadow: inset 0 0 0 2px var(--orange);
+    box-shadow: inset 0 0 0 2px var(--orange), 0 8px 25px rgba(255,140,0,0.15);
   }
 
   .stat .icon {
@@ -358,7 +374,6 @@
     line-height: 1.2;
   }
 
-  /* ═════════ ЧЕЙНДЖЛОГ ═════════ */
   .changelog { position: relative; padding-left: 26px; }
 
   .changelog::before {
@@ -422,7 +437,6 @@
   .tag.fix   { background: #4a9aff; color: #fff; }
   .tag.event { background: #a855f7; color: #fff; }
 
-  /* ═════════ ПАНЕЛЬ ═════════ */
   .panel {
     background: #2b2b2b;
     border: 3px solid #000;
@@ -431,7 +445,6 @@
     margin-bottom: 20px;
   }
 
-  /* ═════════ ADMIN CARDS ═════════ */
   .admins {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -447,7 +460,10 @@
     display: flex;
     gap: 14px;
     align-items: flex-start;
+    transition: transform .2s;
   }
+
+  .admin:hover { transform: translateY(-3px); }
 
   .admin .head {
     width: 56px; height: 56px;
@@ -484,7 +500,6 @@
     font-size: 16px; color: #b0b0b0; line-height: 1.35;
   }
 
-  /* ═════════ КОМАНДЫ ═════════ */
   .cmd-section { margin-bottom: 22px; }
 
   .cmd-category {
@@ -521,12 +536,10 @@
     cursor: pointer;
     position: relative;
     transition: background .1s;
-    -webkit-tap-highlight-color: transparent;
     outline: none;
   }
 
-  .slot:hover,
-  .slot:focus { background: #a8a8a8; z-index: 20; }
+  .slot:hover, .slot:focus { background: #a8a8a8; z-index: 20; }
 
   .slot .tooltip {
     display: none;
@@ -555,15 +568,10 @@
     font-size: 15px;
   }
 
-  .slot .tooltip small {
-    color: #c0c0c0;
-    font-size: 14px;
-  }
+  .slot .tooltip small { color: #c0c0c0; font-size: 14px; }
 
-  .slot:hover .tooltip,
-  .slot:focus .tooltip { display: block; }
+  .slot:hover .tooltip, .slot:focus .tooltip { display: block; }
 
-  /* ═════════ ГАЛЕРЕЯ ═════════ */
   .gallery {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -610,7 +618,6 @@
     letter-spacing: 0;
   }
 
-  /* ═════════ ПРАВИЛА ═════════ */
   ol.rules { padding-left: 0; list-style: none; }
 
   ol.rules li {
@@ -632,7 +639,6 @@
     padding-top: 2px;
   }
 
-  /* ═════════ FAQ ═════════ */
   details.faq {
     padding: 14px 0;
     border-bottom: 1px dashed #2a2a2a;
@@ -668,22 +674,10 @@
 
   details.faq[open] summary::after { content: '−'; }
 
-  details.faq p {
-    margin-top: 10px;
-    color: #b0b0b0;
-    font-size: 17px;
-  }
+  details.faq p { margin-top: 10px; color: #b0b0b0; font-size: 17px; }
 
-  details.faq ul {
-    margin: 10px 0 12px;
-    padding-left: 22px;
-    color: #b0b0b0;
-  }
-
-  details.faq ul li {
-    margin-bottom: 8px;
-    line-height: 1.5;
-  }
+  details.faq ul { margin: 10px 0 12px; padding-left: 22px; color: #b0b0b0; }
+  details.faq ul li { margin-bottom: 8px; line-height: 1.5; }
 
   details.faq .callout {
     background: rgba(255,140,0,0.08);
@@ -695,7 +689,6 @@
     font-size: 16px;
   }
 
-  /* ═════════ ФИНАЛЬНЫЙ CTA ═════════ */
   .join-final {
     text-align: center;
     padding: 60px 20px 70px;
@@ -718,7 +711,6 @@
     margin-right: auto;
   }
 
-  /* ═════════ FOOTER ═════════ */
   footer {
     padding: 30px 20px;
     text-align: center;
@@ -732,7 +724,30 @@
     border-bottom: 1px dashed var(--orange-soft);
   }
 
-  /* ═════════ ПЛАНШЕТ / МОБИЛКА ═════════ */
+  .sticky-ip {
+    display: none;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 40;
+    background: var(--orange);
+    color: #000;
+    padding: 14px 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    border: 2px solid;
+    border-color: #FFD48A var(--orange) var(--orange) #FFD48A;
+    box-shadow: 0 4px 20px rgba(255,140,0,0.5), inset 0 0 0 1px #8b4a00;
+    cursor: pointer;
+    text-shadow: 1px 1px 0 #FFD48A;
+    transition: transform .15s;
+  }
+
+  .sticky-ip:active { transform: scale(0.97); }
+  .sticky-ip.ok { background: #4a9a4a; border-color: #8ad48a #2a6a2a #2a6a2a #8ad48a; color: #fff; text-shadow: 1px 1px 0 #1a4a1a; }
+
   @media (max-width: 720px) {
     body { font-size: 17px; }
 
@@ -760,7 +775,6 @@
     .stat .icon { font-size: 24px; }
 
     .admins { grid-template-columns: 1fr; }
-
     .gallery { grid-template-columns: 1fr; }
 
     .changelog { padding-left: 22px; }
@@ -769,11 +783,7 @@
 
     .panel { padding: 16px; }
 
-    .mc-btn {
-      font-size: 16px;
-      padding: 12px 20px;
-      width: 100%;
-    }
+    .mc-btn { font-size: 16px; padding: 12px 20px; width: 100%; }
 
     .ip-row { padding: 10px; }
     .ip-row .ip { font-size: 15px; }
@@ -782,15 +792,13 @@
     details.faq p { font-size: 16px; }
 
     .join-final { padding: 46px 16px 56px; }
+
+    .sticky-ip { display: block; }
+    body { padding-bottom: 90px; }
   }
 
-  /* ═════════ ТАЧ-УСТРОЙСТВА ═════════ */
   @media (hover: none) and (pointer: coarse) {
-    .slot {
-      width: 60px;
-      height: 60px;
-      font-size: 30px;
-    }
+    .slot { width: 60px; height: 60px; font-size: 30px; }
     .slot .tooltip {
       white-space: normal;
       width: 220px;
@@ -800,15 +808,11 @@
     }
     .slot .tooltip b { font-size: 16px; }
     .slot .tooltip small { font-size: 15px; }
-
     .mc-btn { padding: 14px 24px; font-size: 17px; }
-
     .stat:active { transform: scale(0.98); }
-
     header nav a { padding: 10px 8px; }
   }
 
-  /* ═════════ МАЛЕНЬКИЕ ЭКРАНЫ ═════════ */
   @media (max-width: 480px) {
     body { font-size: 16px; }
 
@@ -849,23 +853,23 @@
     .bg-particles span { display: none; }
   }
 
-  /* Отключаем анимацию для тех, кто страдает от неё */
   @media (prefers-reduced-motion: reduce) {
     .bg-particles span { animation: none; opacity: 0; }
     .ip-row { animation: none; }
+    .fade-in { opacity: 1; transform: none; }
     html { scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
 
-<!-- Анимированный фон -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
 <div class="bg-particles">
   <span></span><span></span><span></span><span></span><span></span>
   <span></span><span></span><span></span><span></span><span></span>
 </div>
 
-<!-- ═══════ HEADER ═══════ -->
 <header>
   <div class="brand">
     <img src="https://raw.githubusercontent.com/daniilbuzov/cat-ness-smp/refs/heads/main/logo.png" alt="CAT-NESS SMP">
@@ -880,7 +884,6 @@
   </nav>
 </header>
 
-<!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <div class="server-card">
     <div class="row">
@@ -907,17 +910,16 @@
   </div>
 </section>
 
-<!-- ═══════ ЦИФРЫ ═══════ -->
-<section id="stats">
+<section id="stats" class="fade-in">
   <div class="wrap">
     <div class="kicker">Сервер в цифрах</div>
     <h2>Чуть-чуть <em>статистики</em></h2>
-    <p>Живые цифры нашего маленького мира — обновляются руками, поэтому не бейте, если что-то запаздывает.</p>
+    <p>Живые цифры нашего маленького мира.</p>
 
     <div class="stats">
       <div class="stat">
         <span class="icon">👥</span>
-        <div class="num" data-count="47">0</div>
+        <div class="num" data-count="10">0</div>
         <div class="label">заходило игроков</div>
       </div>
       <div class="stat">
@@ -939,8 +941,7 @@
   </div>
 </section>
 
-<!-- ═══════ НОВОСТИ ═══════ -->
-<section id="news">
+<section id="news" class="fade-in">
   <div class="wrap">
     <div class="kicker">Что нового</div>
     <h2>Жизнь сервера</h2>
@@ -961,7 +962,7 @@
         <div class="title">Система рынка и заданий</div>
         <div class="body">
           <span class="tag new">Новое</span>
-          Добавили рынок игроков, кейсы, рулетку и четыре ветки заданий (Шахтёр, Охотник, Дровосек, Зомби-убийца). Монеты теперь можно зарабатывать разными путями.
+          Добавили рынок игроков, кейсы, рулетку и четыре ветки заданий (Шахтёр, Охотник, Дровосек, Зомби-убийца).
         </div>
       </div>
 
@@ -970,7 +971,7 @@
         <div class="title">Дома и варпы</div>
         <div class="body">
           <span class="tag fix">Улучшение</span>
-          Починили систему домов, добавили команды <b>/sethome</b>, <b>/home</b>, <b>/warps</b>. Теперь быстро добраться до нужного места можно за пару секунд.
+          Починили систему домов, добавили команды <b>/sethome</b>, <b>/home</b>, <b>/warps</b>.
         </div>
       </div>
 
@@ -979,24 +980,23 @@
         <div class="title">Планы на будущее</div>
         <div class="body">
           <span class="tag event">Ивент</span>
-          Хотим провести первый серверный ивент — гонки на лодках или PvP-турнир. Следи за анонсами в нашем MAX-канале.
+          Хотим провести первый серверный ивент — гонки на лодках или PvP-турнир.
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════ О СЕРВЕРЕ ═══════ -->
-<section id="about">
+<section id="about" class="fade-in">
   <div class="wrap">
     <div class="kicker">О сервере</div>
     <h2>Маленький выживач, <em>который держим для себя</em></h2>
 
-    <p>Мы с <b>ya40p</b> запустили CAT-NESS просто чтобы было куда зайти после школы. Сначала играли вдвоём, потом подтянулись друзья, потом друзья друзей. Сейчас это небольшая компания — кто-то строит замки, кто-то копает шахты, кто-то просто сидит в голосовом и болтает.</p>
+    <p>Мы с <b>ya40p</b> запустили CAT-NESS просто чтобы было куда зайти после школы. Сначала играли вдвоём, потом подтянулись друзья, потом друзья друзей.</p>
 
-    <p>Сервер маленький — это не баг, а фича. Тут реально можно кого-то встретить, подружиться и остаться надолго. Без 200 человек в табе и без «донат = власть». Донат-ранги у нас покупаются только за игровые монеты, реальных денег мы не берём. Версия — <b>Minecraft 1.21.11</b> (Java Edition).</p>
+    <p>Сервер маленький — это не баг, а фича. Тут реально можно кого-то встретить, подружиться и остаться надолго. Без 200 человек в табе и без «донат = власть». Версия — <b>Minecraft 1.21.11</b> (Java Edition).</p>
 
-    <p style="color: var(--orange); font-weight: 600;">↳ Если только зашёл и не знаешь, куда идти — просто напиши «привет» в чат. Кто-нибудь отзовётся.</p>
+    <p style="color: var(--orange); font-weight: 600;">↳ Если только зашёл и не знаешь, куда идти — просто напиши «привет» в чат.</p>
 
     <h3>Кто держит сервер</h3>
 
@@ -1006,7 +1006,7 @@
         <div class="info">
           <div class="name">Daniilbuzov</div>
           <span class="rank owner">ОСНОВАТЕЛЬ</span>
-          <div class="desc">Строит, чинит, разбирается с багами, банит читеров. Если что-то сломалось — пиши ему.</div>
+          <div class="desc">Строит, чинит, разбирается с багами, банит читеров.</div>
         </div>
       </div>
 
@@ -1015,20 +1015,19 @@
         <div class="info">
           <div class="name">ya40p</div>
           <span class="rank friend">ДРУГ · ПОМОЩНИК</span>
-          <div class="desc">Держит порядок в чате, помогает новичкам, устраивает ивенты. Если основателя нет — обращайся к нему.</div>
+          <div class="desc">Порядок в чате, помогает новичкам, устраивает ивенты.</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════ КОМАНДЫ ═══════ -->
-<section id="commands">
+<section id="commands" class="fade-in">
   <div class="wrap">
     <div class="kicker">Команды для новичков</div>
     <h2>Что вводить в чат</h2>
 
-    <p>Наведи мышку (или тапни на телефоне) на любой слот — появится подсказка. Всё, что начинается с <b>/</b>, вводится прямо в чат в игре.</p>
+    <p>Наведи мышку (или тапни на телефоне) на любой слот — появится подсказка.</p>
 
     <div class="cmd-section">
       <div class="cmd-category">Навигация</div>
@@ -1093,8 +1092,7 @@
   </div>
 </section>
 
-<!-- ═══════ ГАЛЕРЕЯ ═══════ -->
-<section id="gallery">
+<section id="gallery" class="fade-in">
   <div class="wrap">
     <div class="kicker">Скриншоты</div>
     <h2>Как выглядит наш мир</h2>
@@ -1120,28 +1118,26 @@
   </div>
 </section>
 
-<!-- ═══════ ПРАВИЛА ═══════ -->
-<section id="rules">
+<section id="rules" class="fade-in">
   <div class="wrap">
     <div class="kicker">Правила</div>
     <h2>Коротко, чтобы не читать стену</h2>
 
     <div class="panel">
       <ol class="rules">
-        <li><span class="num">01</span><span><b>Не гриф.</b> Не ломай чужие постройки, не поджигай, не заливай лавой. Даже если «просто шутка».</span></li>
+        <li><span class="num">01</span><span><b>Не гриф.</b> Не ломай чужие постройки, не поджигай, не заливай лавой.</span></li>
         <li><span class="num">02</span><span><b>Не читерить.</b> X-Ray, флай, килл-аура, автоклик — бан без разговоров.</span></li>
-        <li><span class="num">03</span><span><b>Не спамить и не оскорблять.</b> Мат в меру, оскорбления по национальности/полу — нет.</span></li>
-        <li><span class="num">04</span><span><b>Не воровать.</b> Взял у соседа что-то из сундука без разрешения — это воровство.</span></li>
-        <li><span class="num">05</span><span><b>Договаривайся словами.</b> Хочешь PvP — спроси, хочет ли соперник. Без «я просто подошёл и убил».</span></li>
+        <li><span class="num">03</span><span><b>Не спамить и не оскорблять.</b> Мат в меру, оскорбления — нет.</span></li>
+        <li><span class="num">04</span><span><b>Не воровать.</b> Взял у соседа из сундука без разрешения — воровство.</span></li>
+        <li><span class="num">05</span><b>Договаривайся словами.</b> Хочешь PvP — спроси, хочет ли соперник.</li>
       </ol>
     </div>
 
-    <p style="color: var(--text-mute); font-style: italic; font-size: 17px;">За нарушения — предупреждение, потом бан. За читы и гриф базы — сразу бан. Апелляции в личку <b style="color: var(--orange);">Daniilbuzov</b>, он человек и выслушает.</p>
+    <p style="color: var(--text-mute); font-style: italic; font-size: 17px;">За нарушения — предупреждение, потом бан. Апелляции в личку <b style="color: var(--orange);">Daniilbuzov</b>.</p>
   </div>
 </section>
 
-<!-- ═══════ FAQ ═══════ -->
-<section id="faq">
+<section id="faq" class="fade-in">
   <div class="wrap">
     <div class="kicker">Частые вопросы</div>
     <h2>Что обычно спрашивают новички</h2>
@@ -1149,53 +1145,44 @@
     <details class="faq" open>
       <summary>📱 Можно ли зайти с телефона или планшета?</summary>
       <div class="callout">
-        <b style="color: var(--orange);">Если у тебя Minecraft Bedrock (PE / MCPE / «карманный майн») — нет.</b> Наш сервер работает на Java Edition (1.21.11), а это другая версия игры — они несовместимы.
+        <b style="color: var(--orange);">Если у тебя Minecraft Bedrock (PE / MCPE) — нет.</b> Сервер работает на Java Edition (1.21.11), они несовместимы.
       </div>
-      <p><b>Но есть обходной путь:</b> на Android можно поставить сторонний Java-лаунчер и зайти на сервер как с обычного ПК. Проверенные варианты:</p>
+      <p><b>Но есть обходной путь:</b> на Android можно поставить сторонний Java-лаунчер и зайти как с ПК:</p>
       <ul>
-        <li><a href="https://millida.net/launcher/dl/android" target="_blank" rel="noopener">Millida Launcher</a> — простой, бесплатный, работает на средних телефонах. Хороший выбор, если у тебя не топовое железо.</li>
-        <li><a href="https://play.google.com/store/apps/details?id=git.artdeell.mjlaunch&hl=ru" target="_blank" rel="noopener">MJ Launcher</a> — есть в Google Play, стабильно обновляется, поддерживает современные версии Java Edition.</li>
+        <li><a href="https://millida.net/launcher/dl/android" target="_blank" rel="noopener">Millida Launcher</a> — простой, для средних телефонов.</li>
+        <li><a href="https://play.google.com/store/apps/details?id=git.artdeell.mjlaunch&hl=ru" target="_blank" rel="noopener">MJ Launcher</a> — есть в Play Store, стабильный.</li>
       </ul>
-      <p><b>На iPhone / iPad</b> сложнее — там нужен PojavLauncher через AltStore или аналоги. Если не боишься возиться — гугли «PojavLauncher iOS», но это уже для тех, кто готов потратить час.</p>
-      <div class="callout">
-        <b>Совет:</b> на телефоне сервер будет тормозить сильнее, чем на ПК. Если лагает — в настройках лаунчера уменьши дальность прорисовки (render distance) до 4–6 чанков и отключи красивые шейдеры.
-      </div>
+      <p><b>На iPhone / iPad</b> — только PojavLauncher через AltStore. Сложно, но возможно.</p>
     </details>
 
     <details class="faq">
       <summary>Как зайти на сервер с ПК?</summary>
-      <p>Открой Minecraft Java Edition <b>1.21.11</b>, нажми «Сетевая игра» → «Добавить сервер», вбей адрес <b>cat-ness.aternos.me:31789</b>. Всё, подключайся. Пиратка тоже зайдёт, но лучше лицензия.</p>
+      <p>Открой Minecraft Java Edition <b>1.21.11</b>, «Сетевая игра» → «Добавить сервер», вбей <b>cat-ness.aternos.me:31789</b>. Пиратка тоже зайдёт.</p>
     </details>
 
     <details class="faq">
       <summary>Сервер спит / пишет офлайн. Что делать?</summary>
-      <p>Сервер хостится на Aternos — это бесплатный хостинг, который «засыпает», когда на нём никого нет. Просто напиши в наш <a href="https://max.ru/join/d_kp45giH1JXqOBkTXv5oDlgN7Nvag-EwW5i7XCU7K4" target="_blank" rel="noopener">MAX-канал</a> или попроси кого-то из админов запустить сервер. Через 1–2 минуты он поднимется.</p>
+      <p>Сервер на Aternos — «засыпает», когда никого нет. Напиши в наш <a href="https://max.ru/join/d_kp45giH1JXqOBkTXv5oDlgN7Nvag-EwW5i7XCU7K4" target="_blank" rel="noopener">MAX-канал</a> или попроси админа запустить. Через 1–2 минуты поднимется.</p>
     </details>
 
     <details class="faq">
       <summary>Что делать в первые 10 минут?</summary>
-      <p>Напиши в чат «привет, я новый» — кто-нибудь отзовётся. Потом открой книжку-меню (её выдают при входе) и посмотри задания — они дают первые монеты.</p>
+      <p>Напиши в чат «привет, я новый». Потом открой книжку-меню (выдают при входе) и посмотри задания — дают первые монеты.</p>
     </details>
 
     <details class="faq">
       <summary>Как заработать первые монеты?</summary>
-      <p>Три простых пути: продать ресурсы в серверном магазине (руда, уголь, железо), выполнить задание Шахтёра или выставить что-то на рынке игроков.</p>
-    </details>
-
-    <details class="faq">
-      <summary>Можно ли стать админом?</summary>
-      <p>Админов двое: <b>Daniilbuzov</b> (основатель) и <b>ya40p</b> (друг и помощник). Больше не берём. Но если хочешь помогать — будь активным, помогай новичкам, и, может, получишь роль хелпера в чате.</p>
+      <p>Три пути: продать ресурсы в серверном магазине, выполнить задание Шахтёра или выставить что-то на рынке игроков.</p>
     </details>
 
     <details class="faq">
       <summary>Куда писать, если что-то не работает?</summary>
-      <p>В наш <a href="https://max.ru/join/d_kp45giH1JXqOBkTXv5oDlgN7Nvag-EwW5i7XCU7K4" target="_blank" rel="noopener">канал в MAX</a> или в личку кому-то из админов прямо на сервере. Обычно отвечаем в течение дня.</p>
+      <p>В наш <a href="https://max.ru/join/d_kp45giH1JXqOBkTXv5oDlgN7Nvag-EwW5i7XCU7K4" target="_blank" rel="noopener">канал в MAX</a> или в личку админам прямо на сервере.</p>
     </details>
   </div>
 </section>
 
-<!-- ═══════ ФИНАЛЬНЫЙ CTA ═══════ -->
-<section class="join-final">
+<section class="join-final fade-in">
   <h2>Заходи, если стало интересно</h2>
   <p>Скопируй IP и вбей в Minecraft. Дальше сам разберёшься — тут все свои.</p>
 
@@ -1209,40 +1196,65 @@
   </button>
 
   <p style="margin-top: 24px; font-size: 17px;">
-    Мы в <a href="https://max.ru/join/d_kp45giH1JXqOBkTXv5oDlgN7Nvag-EwW5i7XCU7K4" target="_blank" rel="noopener" style="color: var(--orange);">MAX-канале</a> — там анонсы ивентов и просто болталка.
+    Мы в <a href="https://max.ru/join/d_kp45giH1JXqOBkTXv5oDlgN7Nvag-EwW5i7XCU7K4" target="_blank" rel="noopener" style="color: var(--orange);">MAX-канале</a> — там анонсы ивентов.
   </p>
 </section>
 
-<!-- ═══════ FOOTER ═══════ -->
 <footer>
   © CAT-NESS SMP · 2025 · <span style="color: var(--orange);">♥</span> для тех, кто заходит
 </footer>
 
+<div class="sticky-ip" id="stickyIP" onclick="copyIP()">
+  ⊳ Скопировать IP сервера
+</div>
+
 <script>
-  /* ═══ Анимированные счётчики ═══ */
+  /* ═══ ПРОГРЕСС СКРОЛЛА ═══ */
+  const scrollProgress = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = (scrollTop / docHeight) * 100;
+    scrollProgress.style.width = percent + '%';
+  }, { passive: true });
+
+  /* ═══ ПОЯВЛЕНИЕ СЕКЦИЙ ═══ */
+  const fadeElements = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeElements.forEach(el => fadeObserver.observe(el));
+  } else {
+    fadeElements.forEach(el => el.classList.add('visible'));
+  }
+
+  /* ═══ СЧЁТЧИКИ ═══ */
   function animateCounters() {
     const counters = document.querySelectorAll('.num[data-count]');
     counters.forEach(counter => {
+      if (counter.dataset.animated) return;
+      counter.dataset.animated = '1';
       const target = parseInt(counter.dataset.count, 10);
       const duration = 1500;
       const startTime = performance.now();
-
       function tick(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
         const value = Math.floor(eased * target);
         counter.textContent = value.toLocaleString('ru-RU');
-        if (progress < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          counter.textContent = target.toLocaleString('ru-RU') + (target > 100 ? '+' : '');
-        }
+        if (progress < 1) requestAnimationFrame(tick);
+        else counter.textContent = target.toLocaleString('ru-RU') + (target > 100 ? '+' : '');
       }
       requestAnimationFrame(tick);
     });
   }
-
   const statsSection = document.getElementById('stats');
   if (statsSection && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
@@ -1258,12 +1270,11 @@
     animateCounters();
   }
 
-  /* ═══ Копирование IP ═══ */
+  /* ═══ КОПИРОВАНИЕ IP ═══ */
   const SERVER_IP = 'cat-ness.aternos.me:31789';
 
   function copyIP() {
-    const btns = document.querySelectorAll('button.mc-btn');
-
+    const btns = document.querySelectorAll('.mc-btn, .sticky-ip');
     function done() {
       btns.forEach(b => {
         const old = b.textContent;
@@ -1275,13 +1286,11 @@
         }, 1800);
       });
     }
-
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(SERVER_IP).then(done).catch(fallback);
     } else {
       fallback();
     }
-
     function fallback() {
       const t = document.createElement('textarea');
       t.value = SERVER_IP;
