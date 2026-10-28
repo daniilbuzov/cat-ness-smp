@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FF8C00">
+<title>Minecraft SMP — маленький сервер для своих</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF8C00'/%3E%3Crect x='8' y='8' width='48' height='48' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF8C00'/%3E%3Crect x='8' y='8' width='48' height='48' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E">
+
+<meta property="og:title" content="Minecraft SMP">
+<meta property="og:description" content="Маленький выживач для своих. Заходи, у нас уютно.">
+
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --orange: #FF8C00;
+    --orange-soft: #FFB84D;
+    --slot-dark: #373737;
+    --slot-light: #c6c6c6;
+    --text: #eaeaea;
+    --text-mute: #9a9a9a;
+    --green: #4ade80;
+    --red: #ef4444;
+    --yellow: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--text);
+    background: #0f0f0f;
+    overflow-x: hidden;
+    padding-bottom: 60px;
+    position: relative;
+  }
+
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--orange), var(--orange-soft));
+    z-index: 100;
+    transition: width 0.1s ease-out;
+    box-shadow: 0 0 10px rgba(255,140,0,0.6);
+  }
+
+  .bg-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-particles span {
+    position: absolute;
+    display: block;
+    background: var(--orange);
+    opacity: 0;
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,0.4),
+      inset -2px -2px 0 rgba(0,0,0,0.4);
+    animation: floatUp linear infinite;
+    image-rendering: pixelated;
+  }
+
+  .bg-particles span:nth-child(1)  { left: 5%;  animation-duration: 22s; animation-delay: 0s;   width: 10px; height: 10px; }
+  .bg-particles span:nth-child(2)  { left: 12%; animation-duration: 28s; animation-delay: 2s;   width: 16px; height: 16px; }
+  .bg-particles span:nth-child(3)  { left: 22%; animation-duration: 25s; animation-delay: 5s;   width: 8px;  height: 8px;  }
+  .bg-particles span:nth-child(4)  { left: 34%; animation-duration: 30s; animation-delay: 1s;   width: 12px; height: 12px; }
+  .bg-particles span:nth-child(5)  { left: 47%; animation-duration: 24s; animation-delay: 8s;   width: 14px; height: 14px; }
+  .bg-particles span:nth-child(6)  { left: 58%; animation-duration: 27s; animation-delay: 3s;   width: 10px; height: 10px; }
+  .bg-particles span:nth-child(7)  { left: 68%; animation-duration: 32s; animation-delay: 6s;   width: 18px; height: 18px; }
+  .bg-particles span:nth-child(8)  { left: 78%; animation-duration: 26s; animation-delay: 4s;   width: 9px;  height: 9px;  }
+  .bg-particles span:nth-child(9)  { left: 88%; animation-duration: 29s; animation-delay: 7s;   width: 12px; height: 12px; }
+  .bg-particles span:nth-child(10) { left: 95%; animation-duration: 23s; animation-delay: 9s;   width: 15px; height: 15px; }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.35; }
+    90%  { opacity: 0.35; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  header, .hero, section, .join-final, footer { position: relative; z-index: 2; }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(15,15,15,.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 2px solid #2a2a2a;
+    box-shadow: 0 2px 0 var(--orange);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  header .brand { display: flex; align-items: center; gap: 10px; }
+
+  header .brand img {
+    width: 34px; height: 34px;
+    image-rendering: pixelated;
+    border-radius: 4px;
+    box-shadow: 0 0 0 2px #000, 0 0 0 3px #5a5a5a;
+  }
+
+  header .brand span {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--orange);
+    text-shadow: 2px 2px 0 #000;
+    letter-spacing: 0.5px;
+  }
+
+  header nav a {
+    margin-left: 16px;
+    color: var(--text-mute);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 17px;
+    transition: color .15s;
+    padding: 6px 4px;
+    display: inline-block;
+  }
+
+  header nav a:hover { color: var(--orange); }
+
+  .hero {
+    padding: 50px 20px 60px;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(rgba(15,15,15,.85), rgba(15,15,15,.97));
+    border-bottom: 2px solid #000;
+  }
+
+  .server-card {
+    width: 100%;
+    max-width: 680px;
+    background: #2b2b2b;
+    border: 3px solid #000;
+    box-shadow:
+      inset 0 0 0 2px #5a5a5a,
+      0 8px 0 rgba(0,0,0,.6);
+    padding: 20px;
+  }
+
+  .server-card .row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .server-card .icon {
+    width: 80px; height: 80px;
+    image-rendering: pixelated;
+    border: 2px solid #000;
+    box-shadow: inset 0 0 0 2px #5a5a5a;
+    border-radius: 4px;
+  }
+
+  .server-card .name {
+    font-weight: 700;
+    font-size: 24px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .server-card .motd {
+    color: #c9c9c9;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .server-card .motd b { color: var(--orange); }
+
+  .server-card .divider {
+    height: 2px;
+    background: #1a1a1a;
+    box-shadow: 0 1px 0 #4a4a4a;
+    margin: 18px 0;
+  }
+
+  .ip-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #000;
+    border: 2px solid #000;
+    box-shadow: inset 0 0 0 1px #5a5a5a, 0 0 0 0 rgba(255,140,0,0);
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    animation: glow 2.5s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: inset 0 0 0 1px #5a5a5a, 0 0 0 0 rgba(255,140,0,0); }
+    50%      { box-shadow: inset 0 0 0 1px #5a5a5a, 0 0 22px 4px rgba(255,140,0,0.35); }
+  }
+
+  .ip-row .label {
+    color: #7a7a7a;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .ip-row .ip {
+    flex: 1;
+    color: var(--orange-soft);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    user-select: all;
+    word-break: break-all;
+  }
+
+  .mc-btn {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #3a3a3a;
+    padding: 12px 24px;
+    background: #8b8b8b;
+    border: 2px solid;
+    border-color: #c6c6c6 #3a3a3a #3a3a3a #c6c6c6;
+    box-shadow: inset 0 0 0 1px #555;
+    cursor: pointer;
+    transition: filter .1s;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .mc-btn:hover { filter: brightness(1.18); }
+  .mc-btn:active {
+    border-color: #3a3a3a #c6c6c6 #c6c6c6 #3a3a3a;
+    filter: brightness(.92);
+  }
+
+  .mc-btn.orange {
+    background: var(--orange);
+    border-color: #FFD48A var(--orange) var(--orange) #FFD48A;
+    text-shadow: 2px 2px 0 #8b4a00;
+  }
+
+  .mc-btn.ok {
+    background: #4a9a4a;
+    border-color: #8ad48a #2a6a2a #2a6a2a #8ad48a;
+    text-shadow: 2px 2px 0 #1a4a1a;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  section { padding: 55px 0; }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .kicker {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kicker::before { content: '◆'; font-size: 12px; }
+
+  h2 {
+    font-weight: 700;
+    font-size: clamp(22px, 3.5vw, 30px);
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    margin-bottom: 18px;
+    line-height: 1.25;
+  }
+
+  h2 em { color: var(--orange); font-style: normal; }
+
+  h3 {
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    margin: 26px 0 12px;
+  }
+
+  p { margin-bottom: 12px; color: #c9c9c9; }
+  p b { color: var(--orange); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .stat {
+    background: #2b2b2b;
+    border: 3px solid #000;
+    box-shadow: inset 0 0 0 2px #4a4a4a;
+    padding: 20px 14px;
+    text-align: center;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .stat:hover {
+    transform: translateY(-4px);
+    box-shadow: inset 0 0 0 2px var(--orange), 0 8px 25px rgba(255,140,0,0.15);
+  }
+
+  .stat .icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+    line-height: 1;
+  }
+
+  .stat .num {
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--orange);
+    text-shadow: 2px 2px 0 #000;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat .label {
+    color: var(--text-mute);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .changelog { position: relative; padding-left: 26px; }
+
+  .changelog::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: #2a2a2a;
+  }
+
+  .entry { position: relative; padding: 0 0 26px 0; }
+  .entry:last-child { padding-bottom: 0; }
+
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: -24px; top: 8px;
+    width: 12px; height: 12px;
+    background: var(--orange);
+    border: 2px solid #000;
+    box-shadow: 0 0 0 2px #2b2b2b, 0 0 10px rgba(255,140,0,0.5);
+    transform: rotate(45deg);
+  }
+
+  .entry .date {
+    font-size: 13px;
+    color: var(--orange);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .entry .title {
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .entry .body {
+    color: #b0b0b0;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .entry .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 8px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+    text-transform: uppercase;
+  }
+
+  .tag.new   { background: var(--orange); color: #000; text-shadow: 1px 1px 0 #FFD48A; }
+  .tag.fix   { background: #4a9aff; color: #fff; }
+  .tag.event { background: #a855f7; color: #fff; }
+
+  .panel {
+    background: #2b2b2b;
+    border: 3px solid #000;
+    box-shadow: inset 0 0 0 2px #4a4a4a, 0 6px 0 rgba(0,0,0,.5);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .admins {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .admin {
+    background: #2b2b2b;
+    border: 3px solid #000;
+    box-shadow: inset 0 0 0 2px #4a4a4a;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    transition: transform .2s;
+  }
+
+  .admin:hover { transform: translateY(-3px); }
+
+  .admin .head {
+    width: 56px; height: 56px;
+    border: 2px solid #000;
+    box-shadow: inset 0 0 0 2px #5a5a5a, 0 0 12px rgba(255,140,0,0.25);
+    border-radius: 2px;
+    flex-shrink: 0;
+    object-fit: cover;
+    image-rendering: pixelated;
+    background: #3a3a3a;
+  }
+
+  .admin .info .name {
+    font-weight: 700;
+    color: #fff;
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+
+  .admin .info .rank {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 #000;
+  }
+
+  .admin .info .rank.owner { background: var(--orange); color: #000; text-shadow: 1px 1px 0 #FFD48A; }
+  .admin .info .rank.friend { background: #4a9aff; color: #fff; }
+
+  .admin .info .desc {
+    font-size: 16px; color: #b0b0b0; line-height: 1.35;
+  }
+
+  .cmd-section { margin-bottom: 22px; }
+
+  .cmd-category {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--orange);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 52px));
+    gap: 4px;
+    background: #1a1a1a;
+    border: 2px solid #000;
+    box-shadow: inset 0 0 0 2px #3a3a3a;
+    padding: 6px;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .slot {
+    width: 52px; height: 52px;
+    background: #8b8b8b;
+    border: 2px solid;
+    border-color: var(--slot-dark) var(--slot-light) var(--slot-light) var(--slot-dark);
+    box-shadow: inset 1px 1px 0 #a8a8a8, inset -1px -1px 0 #6a6a6a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    position: relative;
+    transition: background .1s;
+    outline: none;
+  }
+
+  .slot:hover, .slot:focus { background: #a8a8a8; z-index: 20; }
+
+  .slot .tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(16, 0, 16, 0.96);
+    border: 2px solid #6a00ff;
+    box-shadow: 0 0 0 1px #000;
+    padding: 8px 12px;
+    font-size: 15px;
+    color: #fff;
+    white-space: nowrap;
+    z-index: 30;
+    line-height: 1.3;
+    text-align: left;
+    pointer-events: none;
+  }
+
+  .slot .tooltip b {
+    display: block;
+    color: var(--orange-soft);
+    font-weight: 700;
+    margin-bottom: 2px;
+    font-size: 15px;
+  }
+
+  .slot .tooltip small { color: #c0c0c0; font-size: 14px; }
+
+  .slot:hover .tooltip, .slot:focus .tooltip { display: block; }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .gallery figure {
+    margin: 0;
+    background: #2b2b2b;
+    border: 3px solid #000;
+    box-shadow: inset 0 0 0 2px #4a4a4a;
+    padding: 6px;
+    transition: transform .25s, box-shadow .25s;
+  }
+
+  .gallery figure:hover {
+    transform: translateY(-4px);
+    box-shadow: inset 0 0 0 2px var(--orange), 0 10px 30px rgba(255,140,0,0.15);
+  }
+
+  .gallery img {
+    width: 100%;
+    display: block;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+
+  .gallery figcaption {
+    padding: 10px 4px 4px;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .gallery figcaption small {
+    display: block;
+    color: var(--text-mute);
+    font-weight: 500;
+    font-size: 14px;
+    margin-top: 3px;
+    letter-spacing: 0;
+  }
+
+  ol.rules { padding-left: 0; list-style: none; }
+
+  ol.rules li {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #2a2a2a;
+    color: #c9c9c9;
+  }
+
+  ol.rules li:last-child { border-bottom: none; }
+
+  ol.rules .num {
+    font-weight: 700;
+    color: var(--orange);
+    font-size: 15px;
+    flex-shrink: 0;
+    width: 28px;
+    padding-top: 2px;
+  }
+
+  details.faq {
+    padding: 14px 0;
+    border-bottom: 1px dashed #2a2a2a;
+    cursor: pointer;
+  }
+
+  details.faq:last-child { border-bottom: none; }
+
+  details.faq summary {
+    list-style: none;
+    font-weight: 700;
+    font-size: 17px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    line-height: 1.35;
+    padding: 4px 0;
+  }
+
+  details.faq summary::-webkit-details-marker { display: none; }
+
+  details.faq summary::after {
+    content: '+';
+    color: var(--orange);
+    font-size: 24px;
+    font-weight: 700;
+    transition: transform .15s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  details.faq[open] summary::after { content: '−'; }
+
+  details.faq p { margin-top: 10px; color: #b0b0b0; font-size: 17px; }
+
+  details.faq ul { margin: 10px 0 12px; padding-left: 22px; color: #b0b0b0; }
+  details.faq ul li { margin-bottom: 8px; line-height: 1.5; }
+
+  details.faq .callout {
+    background: rgba(255,140,0,0.08);
+    border-left: 3px solid var(--orange);
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 2px;
+    color: #d8d8d8;
+    font-size: 16px;
+  }
+
+  .join-final {
+    text-align: center;
+    padding: 60px 20px 70px;
+    background: linear-gradient(rgba(15,15,15,.95), rgba(20,15,5,.98));
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    box-shadow: 0 0 0 2px var(--orange);
+    margin-top: 40px;
+  }
+
+  .join-final h2 { margin-bottom: 10px; }
+
+  .join-final p {
+    color: #b9b9b9;
+    margin-bottom: 22px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  footer {
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #6a6a6a;
+  }
+
+  footer a {
+    color: var(--orange-soft);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--orange-soft);
+  }
+
+  .sticky-ip {
+    display: none;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 40;
+    background: var(--orange);
+    color: #000;
+    padding: 14px 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    border: 2px solid;
+    border-color: #FFD48A var(--orange) var(--orange) #FFD48A;
+    box-shadow: 0 4px 20px rgba(255,140,0,0.5), inset 0 0 0 1px #8b4a00;
+    cursor: pointer;
+    text-shadow: 1px 1px 0 #FFD48A;
+    transition: transform .15s;
+  }
+
+  .sticky-ip:active { transform: scale(0.97); }
+  .sticky-ip.ok { background: #4a9a4a; border-color: #8ad48a #2a6a2a #2a6a2a #8ad48a; color: #fff; text-shadow: 1px 1px 0 #1a4a1a; }
+
+  @media (max-width: 720px) {
+    body { font-size: 17px; }
+
+    header { padding: 10px 14px; }
+    header .brand span { font-size: 16px; }
+    header .brand img { width: 30px; height: 30px; }
+    header nav a { margin-left: 10px; font-size: 15px; padding: 8px 6px; }
+
+    .hero { padding: 36px 14px 46px; }
+    .server-card { padding: 16px; }
+    .server-card .row { grid-template-columns: 64px 1fr; gap: 12px; }
+    .server-card .icon { width: 64px; height: 64px; }
+    .server-card .name { font-size: 20px; }
+    .server-card .motd { font-size: 15px; }
+
+    section { padding: 40px 0; }
+    .wrap { padding: 0 16px; }
+
+    h2 { font-size: 22px; }
+    h3 { font-size: 17px; }
+
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat { padding: 16px 10px; }
+    .stat .num { font-size: 26px; }
+    .stat .icon { font-size: 24px; }
+
+    .admins { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr; }
+
+    .changelog { padding-left: 22px; }
+    .entry::before { left: -20px; width: 10px; height: 10px; }
+    .entry .title { font-size: 17px; }
+
+    .panel { padding: 16px; }
+
+    .mc-btn { font-size: 16px; padding: 12px 20px; width: 100%; }
+
+    .ip-row { padding: 10px; }
+    .ip-row .ip { font-size: 15px; }
+
+    details.faq summary { font-size: 16px; }
+    details.faq p { font-size: 16px; }
+
+    .join-final { padding: 46px 16px 56px; }
+
+    .sticky-ip { display: block; }
+    body { padding-bottom: 90px; }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .slot { width: 60px; height: 60px; font-size: 30px; }
+    .slot .tooltip {
+      white-space: normal;
+      width: 220px;
+      text-align: center;
+      font-size: 16px;
+      padding: 10px 14px;
+    }
+    .slot .tooltip b { font-size: 16px; }
+    .slot .tooltip small { font-size: 15px; }
+    .mc-btn { padding: 14px 24px; font-size: 17px; }
+    .stat:active { transform: scale(0.98); }
+    header nav a { padding: 10px 8px; }
+  }
+
+  @media (max-width: 480px) {
+    body { font-size: 16px; }
+
+    header { padding: 8px 12px; }
+    header .brand span { font-size: 14px; }
+    header nav { width: 100%; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 2px; }
+    header nav a { margin-left: 0; font-size: 14px; padding: 6px 8px; }
+
+    .hero { padding: 28px 12px 36px; }
+    .server-card { padding: 14px; }
+    .server-card .row { grid-template-columns: 56px 1fr; gap: 10px; }
+    .server-card .icon { width: 56px; height: 56px; }
+    .server-card .name { font-size: 17px; }
+    .server-card .motd { font-size: 14px; }
+
+    .ip-row { flex-wrap: wrap; gap: 4px; }
+    .ip-row .ip { font-size: 14px; flex-basis: 100%; }
+    .ip-row .label { font-size: 14px; }
+
+    .mc-btn { font-size: 15px; padding: 12px 16px; }
+
+    .wrap { padding: 0 12px; }
+    section { padding: 32px 0; }
+    h2 { font-size: 20px; }
+    .kicker { font-size: 13px; letter-spacing: 2px; }
+
+    .slots { grid-template-columns: repeat(auto-fill, minmax(48px, 48px)); }
+    .slot { width: 48px; height: 48px; font-size: 22px; }
+
+    .stat .num { font-size: 22px; }
+    .stat .label { font-size: 13px; }
+
+    .admin { padding: 12px; gap: 10px; }
+    .admin .head { width: 48px; height: 48px; }
+
+    .join-final { padding: 36px 12px 44px; }
+
+    .bg-particles span { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-particles span { animation: none; opacity: 0; }
+    .ip-row { animation: none; }
+    .fade-in { opacity: 1; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="bg-particles">
+  <span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<header>
+  <div class="brand">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF8C00'/%3E%3Crect x='8' y='8' width='48' height='48' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E" alt="Логотип">
+    <span>Minecraft SMP</span>
+  </div>
+  <nav>
+    <a href="#stats">Цифры</a>
+    <a href="#news">Новости</a>
+    <a href="#commands">Команды</a>
+    <a href="#gallery">Фото</a>
+    <a href="#faq">Вопросы</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="server-card">
+    <div class="row">
+      <img class="icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF8C00'/%3E%3Crect x='8' y='8' width='48' height='48' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E" alt="Иконка сервера">
+      <div>
+        <div class="name">Minecraft SMP</div>
+        <div class="motd">
+          <b>Дружный выживач для своих.</b><br>
+          Строим, копаем, болтаем в голосовом.
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="ip-row">
+      <span class="label">IP:</span>
+      <span class="ip">play.yourserver.com</span>
+    </div>
+
+    <button class="mc-btn orange" onclick="copyIP()" style="width: 100%;">
+      ⊳ Скопировать IP и играть
+    </button>
+  </div>
+</section>
+
+<section id="stats" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">Сервер в цифрах</div>
+    <h2>Чуть-чуть <em>статистики</em></h2>
+    <p>Живые цифры нашего маленького мира.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="icon">👥</span>
+        <div class="num" data-count="10">0</div>
+        <div class="label">заходило игроков</div>
+      </div>
+      <div class="stat">
+        <span class="icon">📅</span>
+        <div class="num" data-count="128">0</div>
+        <div class="label">дней серверу</div>
+      </div>
+      <div class="stat">
+        <span class="icon">🧱</span>
+        <div class="num" data-count="5823">0</div>
+        <div class="label">блоков поставлено</div>
+      </div>
+      <div class="stat">
+        <span class="icon">⚔️</span>
+        <div class="num" data-count="214">0</div>
+        <div class="label">мобов убито</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="news" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">Что нового</div>
+    <h2>Жизнь сервера</h2>
+    <p>Небольшой чейнджлог — что добавили, что починили, какие ивенты были.</p>
+
+    <div class="changelog">
+      <div class="entry">
+        <div class="date">Сейчас</div>
+        <div class="title">Сайт сервера запущен</div>
+        <div class="body">
+          <span class="tag new">Новое</span>
+          Теперь у сервера есть свой сайт — с командами для новичков, скриншотами и IP. Дальше будем сюда постить новости.
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="date">Недавно</div>
+        <div class="title">Система рынка и заданий</div>
+        <div class="body">
+          <span class="tag new">Новое</span>
+          Добавили рынок игроков, кейсы, рулетку и четыре ветки заданий (Шахтёр, Охотник, Дровосек, Зомби-убийца).
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="date">Ранее</div>
+        <div class="title">Дома и варпы</div>
+        <div class="body">
+          <span class="tag fix">Улучшение</span>
+          Починили систему домов, добавили команды <b>/sethome</b>, <b>/home</b>, <b>/warps</b>.
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="date">Скоро</div>
+        <div class="title">Планы на будущее</div>
+        <div class="body">
+          <span class="tag event">Ивент</span>
+          Хотим провести первый серверный ивент — гонки на лодках или PvP-турнир.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">О сервере</div>
+    <h2>Маленький выживач, <em>который держим для себя</em></h2>
+
+    <p>Мы с <b>Друг1</b> запустили сервер просто чтобы было куда зайти после школы. Сначала играли вдвоём, потом подтянулись друзья, потом друзья друзей.</p>
+
+    <p>Сервер маленький — это не баг, а фича. Тут реально можно кого-то встретить, подружиться и остаться надолго. Без 200 человек в табе и без «донат = власть». Версия — <b>Minecraft 1.21.11</b> (Java Edition).</p>
+
+    <p style="color: var(--orange); font-weight: 600;">↳ Если только зашёл и не знаешь, куда идти — просто напиши «привет» в чат.</p>
+
+    <h3>Кто держит сервер</h3>
+
+    <div class="admins">
+      <div class="admin">
+        <img class="head" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%233a3a3a'/%3E%3Ccircle cx='32' cy='26' r='12' fill='%23FF8C00'/%3E%3Crect x='14' y='42' width='36' height='22' rx='10' fill='%23FF8C00'/%3E%3C/svg%3E" alt="Админ 1">
+        <div class="info">
+          <div class="name">Админ 1</div>
+          <span class="rank owner">ОСНОВАТЕЛЬ</span>
+          <div class="desc">Строит, чинит, разбирается с багами, банит читеров.</div>
+        </div>
+      </div>
+
+      <div class="admin">
+        <img class="head" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%233a3a3a'/%3E%3Ccircle cx='32' cy='26' r='12' fill='%234a9aff'/%3E%3Crect x='14' y='42' width='36' height='22' rx='10' fill='%234a9aff'/%3E%3C/svg%3E" alt="Админ 2">
+        <div class="info">
+          <div class="name">Админ 2</div>
+          <span class="rank friend">ДРУГ · ПОМОЩНИК</span>
+          <div class="desc">Порядок в чате, помогает новичкам, устраивает ивенты.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="commands" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">Команды для новичков</div>
+    <h2>Что вводить в чат</h2>
+
+    <p>Наведи мышку (или тапни на телефоне) на любой слот — появится подсказка.</p>
+
+    <div class="cmd-section">
+      <div class="cmd-category">Навигация</div>
+      <div class="slots">
+        <div class="slot" tabindex="0">📖<div class="tooltip"><b>/menu</b><small>Открыть главное меню</small></div></div>
+        <div class="slot" tabindex="0">🏠<div class="tooltip"><b>/spawn</b><small>Телепорт на спавн</small></div></div>
+        <div class="slot" tabindex="0">🎲<div class="tooltip"><b>/rtp</b><small>Случайный телепорт</small></div></div>
+        <div class="slot" tabindex="0">🌌<div class="tooltip"><b>/warps</b><small>Список всех варпов</small></div></div>
+        <div class="slot" tabindex="0">➡️<div class="tooltip"><b>/warp &lt;имя&gt;</b><small>Перейти к варпу</small></div></div>
+        <div class="slot" tabindex="0">↩️<div class="tooltip"><b>/back</b><small>Вернуться на место смерти</small></div></div>
+      </div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-category">Дома</div>
+      <div class="slots">
+        <div class="slot" tabindex="0">📌<div class="tooltip"><b>/sethome &lt;имя&gt;</b><small>Поставить дом (до 3-х)</small></div></div>
+        <div class="slot" tabindex="0">🚪<div class="tooltip"><b>/home &lt;имя&gt;</b><small>Телепорт домой</small></div></div>
+        <div class="slot" tabindex="0">🗑️<div class="tooltip"><b>/delhome &lt;имя&gt;</b><small>Удалить дом</small></div></div>
+        <div class="slot" tabindex="0">📋<div class="tooltip"><b>/homes</b><small>Список твоих домов</small></div></div>
+      </div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-category">Экономика</div>
+      <div class="slots">
+        <div class="slot" tabindex="0">🛒<div class="tooltip"><b>/market</b><small>Рынок игроков</small></div></div>
+        <div class="slot" tabindex="0">💸<div class="tooltip"><b>/pay &lt;ник&gt; &lt;сумма&gt;</b><small>Перевести монеты</small></div></div>
+        <div class="slot" tabindex="0">🏆<div class="tooltip"><b>/топ</b><small>Топ-3 богачей</small></div></div>
+        <div class="slot" tabindex="0">💰<div class="tooltip"><b>/stats</b><small>Твой баланс и стата</small></div></div>
+      </div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-category">Награды</div>
+      <div class="slots">
+        <div class="slot" tabindex="0">🎁<div class="tooltip"><b>/бонус</b><small>Ежедневный бонус 500</small></div></div>
+        <div class="slot" tabindex="0">🎲<div class="tooltip"><b>/кейс</b><small>Открыть кейс (500)</small></div></div>
+        <div class="slot" tabindex="0">🎰<div class="tooltip"><b>/рулетка &lt;сумма&gt;</b><small>Казино x2 / x5</small></div></div>
+        <div class="slot" tabindex="0">🎒<div class="tooltip"><b>/kit</b><small>Получить свой набор</small></div></div>
+        <div class="slot" tabindex="0">📜<div class="tooltip"><b>/quests</b><small>Задания за монеты</small></div></div>
+      </div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-category">Общение</div>
+      <div class="slots">
+        <div class="slot" tabindex="0">💬<div class="tooltip"><b>/msg &lt;ник&gt; &lt;текст&gt;</b><small>Написать в личку</small></div></div>
+        <div class="slot" tabindex="0">↪️<div class="tooltip"><b>/r &lt;текст&gt;</b><small>Ответить последнему</small></div></div>
+        <div class="slot" tabindex="0">👥<div class="tooltip"><b>/online</b><small>Кто сейчас в игре</small></div></div>
+      </div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-category">Прочее</div>
+      <div class="slots">
+        <div class="slot" tabindex="0">☁️<div class="tooltip"><b>/ec</b><small>Эндер-сундук (54 слота)</small></div></div>
+        <div class="slot" tabindex="0">🌐<div class="tooltip"><b>/сайт</b><small>Открыть этот сайт</small></div></div>
+        <div class="slot" tabindex="0">❓<div class="tooltip"><b>/help</b><small>Все команды сервера</small></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">Скриншоты</div>
+    <h2>Как выглядит наш мир</h2>
+
+    <div class="gallery">
+      <figure>
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 200'%3E%3Crect width='320' height='200' fill='%232b2b2b'/%3E%3Ctext x='160' y='110' font-family='monospace' font-size='20' fill='%239a9a9a' text-anchor='middle'%3EPHOTO%3C/text%3E%3C/svg%3E" alt="Скриншот 1">
+        <figcaption>СКРИНШОТ 1<small>подпись</small></figcaption>
+      </figure>
+      <figure>
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 200'%3E%3Crect width='320' height='200' fill='%232b2b2b'/%3E%3Ctext x='160' y='110' font-family='monospace' font-size='20' fill='%239a9a9a' text-anchor='middle'%3EPHOTO%3C/text%3E%3C/svg%3E" alt="Скриншот 2">
+        <figcaption>СКРИНШОТ 2<small>подпись</small></figcaption>
+      </figure>
+      <figure>
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 200'%3E%3Crect width='320' height='200' fill='%232b2b2b'/%3E%3Ctext x='160' y='110' font-family='monospace' font-size='20' fill='%239a9a9a' text-anchor='middle'%3EPHOTO%3C/text%3E%3C/svg%3E" alt="Скриншот 3">
+        <figcaption>СКРИНШОТ 3<small>подпись</small></figcaption>
+      </figure>
+      <figure>
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 200'%3E%3Crect width='320' height='200' fill='%232b2b2b'/%3E%3Ctext x='160' y='110' font-family='monospace' font-size='20' fill='%239a9a9a' text-anchor='middle'%3EPHOTO%3C/text%3E%3C/svg%3E" alt="Скриншот 4">
+        <figcaption>СКРИНШОТ 4<small>подпись</small></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="rules" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">Правила</div>
+    <h2>Коротко, чтобы не читать стену</h2>
+
+    <div class="panel">
+      <ol class="rules">
+        <li><span class="num">01</span><span><b>Не гриф.</b> Не ломай чужие постройки, не поджигай, не заливай лавой.</span></li>
+        <li><span class="num">02</span><span><b>Не читерить.</b> X-Ray, флай, килл-аура, автоклик — бан без разговоров.</span></li>
+        <li><span class="num">03</span><span><b>Не спамить и не оскорблять.</b> Мат в меру, оскорбления — нет.</span></li>
+        <li><span class="num">04</span><span><b>Не воровать.</b> Взял у соседа из сундука без разрешения — воровство.</span></li>
+        <li><span class="num">05</span><b>Договаривайся словами.</b> Хочешь PvP — спроси, хочет ли соперник.</li>
+      </ol>
+    </div>
+
+    <p style="color: var(--text-mute); font-style: italic; font-size: 17px;">За нарушения — предупреждение, потом бан. Апелляции в личку <b style="color: var(--orange);">Админ 1</b>.</p>
+  </div>
+</section>
+
+<section id="faq" class="fade-in">
+  <div class="wrap">
+    <div class="kicker">Частые вопросы</div>
+    <h2>Что обычно спрашивают новички</h2>
+
+    <details class="faq" open>
+      <summary>📱 Можно ли зайти с телефона или планшета?</summary>
+      <div class="callout">
+        <b style="color: var(--orange);">Если у тебя Minecraft Bedrock (PE / MCPE) — нет.</b> Сервер работает на Java Edition (1.21.11), они несовместимы.
+      </div>
+      <p><b>Но есть обходной путь:</b> на Android можно поставить сторонний Java-лаунчер и зайти как с ПК:</p>
+      <ul>
+        <li><a href="https://millida.net/launcher/dl/android" target="_blank" rel="noopener">Millida Launcher</a> — простой, для средних телефонов.</li>
+        <li><a href="https://play.google.com/store/apps/details?id=git.artdeell.mjlaunch&hl=ru" target="_blank" rel="noopener">MJ Launcher</a> — есть в Play Store, стабильный.</li>
+      </ul>
+      <p><b>На iPhone / iPad</b> — только PojavLauncher через AltStore. Сложно, но возможно.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Как зайти на сервер с ПК?</summary>
+      <p>Открой Minecraft Java Edition <b>1.21.11</b>, «Сетевая игра» → «Добавить сервер», вбей <b>play.yourserver.com</b>. Пиратка тоже зайдёт.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Сервер спит / пишет офлайн. Что делать?</summary>
+      <p>Сервер на Aternos — «засыпает», когда никого нет. Напиши в наш канал или попроси админа запустить. Через 1–2 минуты поднимется.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Что делать в первые 10 минут?</summary>
+      <p>Напиши в чат «привет, я новый». Потом открой книжку-меню (выдают при входе) и посмотри задания — дают первые монеты.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Как заработать первые монеты?</summary>
+      <p>Три пути: продать ресурсы в серверном магазине, выполнить задание Шахтёра или выставить что-то на рынке игроков.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Куда писать, если что-то не работает?</summary>
+      <p>В канал сервера или в личку админам прямо на сервере.</p>
+    </details>
+  </div>
+</section>
+
+<section class="join-final fade-in">
+  <h2>Заходи, если стало интересно</h2>
+  <p>Скопируй IP и вбей в Minecraft. Дальше сам разберёшься — тут все свои.</p>
+
+  <div class="ip-row" style="max-width: 400px; margin: 0 auto 16px;">
+    <span class="label">IP:</span>
+    <span class="ip">play.yourserver.com</span>
+  </div>
+
+  <button class="mc-btn orange" onclick="copyIP()">
+    ⊳ Скопировать IP
+  </button>
+
+  <p style="margin-top: 24px; font-size: 17px;">
+    Мы в канале — там анонсы ивентов.
+  </p>
+</section>
+
+<footer>
+  © Minecraft SMP · 2025 · <span style="color: var(--orange);">♥</span> для тех, кто заходит
+</footer>
+
+<div class="sticky-ip" id="stickyIP" onclick="copyIP()">
+  ⊳ Скопировать IP сервера
+</div>
+
+<script>
+  /* ═══ ПРОГРЕСС СКРОЛЛА ═══ */
+  const scrollProgress = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = (scrollTop / docHeight) * 100;
+    scrollProgress.style.width = percent + '%';
+  }, { passive: true });
+
+  /* ═══ ПОЯВЛЕНИЕ СЕКЦИЙ ═══ */
+  const fadeElements = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeElements.forEach(el => fadeObserver.observe(el));
+  } else {
+    fadeElements.forEach(el => el.classList.add('visible'));
+  }
+
+  /* ═══ СЧЁТЧИКИ ═══ */
+  function animateCounters() {
+    const counters = document.querySelectorAll('.num[data-count]');
+    counters.forEach(counter => {
+      if (counter.dataset.animated) return;
+      counter.dataset.animated = '1';
+      const target = parseInt(counter.dataset.count, 10);
+      const duration = 1500;
+      const startTime = performance.now();
+      function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const value = Math.floor(eased * target);
+        counter.textContent = value.toLocaleString('ru-RU');
+        if (progress < 1) requestAnimationFrame(tick);
+        else counter.textContent = target.toLocaleString('ru-RU') + (target > 100 ? '+' : '');
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+  const statsSection = document.getElementById('stats');
+  if (statsSection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounters();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(statsSection);
+  } else {
+    animateCounters();
+  }
+
+  /* ═══ КОПИРОВАНИЕ IP ═══ */
+  const SERVER_IP = 'play.yourserver.com';
+
+  function copyIP() {
+    const btns = document.querySelectorAll('.mc-btn, .sticky-ip');
+    function done() {
+      btns.forEach(b => {
+        const old = b.textContent;
+        b.textContent = '✓ Скопировано';
+        b.classList.add('ok');
+        setTimeout(() => {
+          b.textContent = old;
+          b.classList.remove('ok');
+        }, 1800);
+      });
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(SERVER_IP).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
+    function fallback() {
+      const t = document.createElement('textarea');
+      t.value = SERVER_IP;
+      t.style.position = 'fixed';
+      t.style.opacity = 0;
+      document.body.appendChild(t);
+      t.select();
+      try { document.execCommand('copy'); done(); }
+      catch (e) { alert('IP: ' + SERVER_IP); }
+      document.body.removeChild(t);
+    }
+  }
+</script>
+
+</body>
+</html>
